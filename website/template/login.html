@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    {% if success == "True" %}
+        <h1>Registration Success</h1>
+    {% endif %}
+
+    <form action="/authentication" enctype="multipart/form-data" method="post">
+
+        <div>
+            <label for="username">Username:</label> <br>
+            <input type="text" id="username" name="username">
+        </div>
+
+        <br>
+
+        <div>
+            <label for="password">Password:</label> <br>
+            <input type="password" id="password" name="password">
+        </div>
+
+        <br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    {% if login == "False" %}
+        <p>Login Fail</p>
+    {% endif %}
+
+    <span id="warning"></span>
+
+    <a href="/registration">Sign Up</a>
+    
+</body>
+</html>
