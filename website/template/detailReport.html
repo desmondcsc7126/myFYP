@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+    </script>
+    <link rel="stylesheet" href="../static/navbar.css">
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        #parameterOption div{
+            padding-left: 5px;
+        }
+
+        .param{
+            margin-bottom: 10px;
+        }
+    </style>
+
+</head>
+<body style="background-color: rgb(219, 250, 236); height: 100vh; margin: 0; background-image: url(../static/wallpaper2.webp); background-size: cover;">
+
+    <div class="sidenav">
+        <div class="naviOpt">
+            <a href="#">YourLink</a>
+            <a href="#">YourLink</a>
+            <a href="#">YourLink</a>
+        </div>
+
+        <div class="myProfile" style="width: 300px; height: 250px; background-color:rgb(53, 51, 51); text-align: center;">
+            <!-- <img src="../static/profile.png" style="background-color: transparent;"> -->
+            <i class='bx bx-user' style="font-size:130px; color: aliceblue; padding: 5px; border: 2px solid white; border-radius: 50%;"></i>
+            <p style="color: white; margin: 5px 0; font-size: 20px;"> Anonymous</p>
+
+            <a href="/login" style="padding: 15px 0; display: flex; justify-content: center;">
+                <i class='bx bx-log-in' style="padding-right: 10px;"></i>
+                <span style="padding-right: 10px ;">Login</span>
+            </a>
+
+            <a href="/logout" style="padding: 15px 0; display: none; justify-content: center;">
+                <i class='bx bx-log-out' style="padding-right: 10px;"></i>
+                <span style="padding-right: 10px ;">Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main" style="height: 100%; display:flex; flex-direction:column; margin-left: 300px;">
+
+        <div style="padding: 2% 3%; font-size: 50px; font-family:sans-serif; font-weight: bold; margin-top: 0; width:fit-content; background-color: rgb(53, 51, 51); color: aliceblue;">
+            {{modelName}} Detail Model Performance
+        </div>
+
+        <div style="padding: 3%; height: 80%; display: flex; justify-content: space-between;">
+            <div style="background-color: white; width: 70%; height: 100%;">
+                <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+            </div>
+
+            <div id="parameterOption" style="width: 25%; background-color:white; display:flex; flex-direction:column; position: relative;">
+                Parameter List:
+                <button id="Visualise_Btn" onclick = "visualise()" style="width:fit-content; position:absolute; bottom: 0; right: 0; margin: 3%;">Visualise</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+        var mydata = '{{mydict | tojson}}';
+        var mainDict = JSON.parse(mydata);
+        var mydict = mainDict['accuracy_record']
+
+        console.log(mydict);
+
+        var mainAxesList = ['n_neighbors','C','max_depth','degree']  // Update the main axis for each algo for visualization
+
+        // Parameter choice for user
+
+        var paraDict = {};
+        // var paraValueList = [];
+
+        for(var key in mainDict['Parameter List']){
+            if (mainDict['Parameter List'].hasOwnProperty(key)){
+                if (mainAxesList.includes(key) == false){
+                    paraDict[key] = mainDict['Parameter List'][key];
+                }
+            }
+        }
+
+        console.log(paraDict);
+
+        let paramOption = document.getElementById("parameterOption");
+
+        for(var key in paraDict){
+            let blk = document.createElement('div');
+            blk.innerHTML = key;
+            blk.id = key;
+            blk.className = 'param';
+            for(var value in paraDict[key]){
+
+                let blk2 = document.createElement('div');
+                let ipt = document.createElement('input');
+                ipt.type = "radio";
+                ipt.id = String(paraDict[key][value]);
+                ipt.name = key;
+                ipt.value = paraDict[key][value];
+                ipt.className = key;
+
+                let lbl = document.createElement('label');
+                lbl.setAttribute("for", String(paraDict[key][value]));
+                lbl.innerHTML = paraDict[key][value];
+
+                blk2.appendChild(ipt);
+                blk2.appendChild(lbl);
+                blk.appendChild(blk2);
+            }
+
+            paramOption.appendChild(blk);
+        }
+
+        // Visualise data
+
+        var val_score;
+        var train_score;
+
+        dict_length = Object.keys(mydict).length;
+
+        for(var i = 0; i < dict_length; i++){
+
+            if (mydict[i]['flag'] == 1){
+                val_score = mydict[i]['val_score'];
+                train_score = mydict[i]['train_score'];
+                console.log(val_score);
+                console.log(train_score);
+
+                break;
+            }
+        }
+
+        console.log(paraDict);
+
+        var xValues = mainDict['main_axis']
+
+        console.log('F ',val_score);
+        console.log('F ',train_score);
+
+        if(xValues){
+
+            myChart = new Chart("myChart", {
+                type: "line",
+                data: {
+                    labels: xValues,
+                    datasets: [{ 
+                    data: val_score,
+                    borderColor: "red",
+                    fill: false,
+                    label: 'Validation Score'
+                    }, 
+                    { 
+                    data: train_score,
+                    borderColor: "green",
+                    fill: false,
+                    label: 'Training Score'
+                    }]
+                },
+                options: {
+                    legend: {display: true},
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        else{
+            var xlabel = ['Training Score','Validation Score'];
+            // var values = train_score.push(...val_score);
+            var values = [];
+
+            values.push(train_score[0]);
+            values.push(val_score[0]);
+
+            myChart = new Chart("myChart", {
+                type: "bar",
+                data: {
+                    labels: xlabel,
+                    datasets: [{
+                    backgroundColor: "red",
+                    data: values
+                    }]
+                },
+                options: {
+                    legend: {display: false},
+                    scales: {
+                    yAxes: [{
+                        ticks: {
+                        beginAtZero: true
+                        }
+                    }],
+                    },
+                    maintainAspectRatio: false
+                }
+                });
+        }
+
+        function visualise(){
+
+            myChart.destroy();
+            var val_score2;
+            var train_score2;
+
+            var xValues = mainDict['main_axis']
+
+            choice_dict = {
+
+            }
+
+            for(var key in paraDict){
+                let cName = '.' + key;
+                console.log(cName);
+                var chk = document.querySelectorAll(cName);
+                console.log(chk);
+                chkLength = chk.length;
+
+                for(i = 0; i < chkLength; i++){
+                    if(chk[i].checked == true){
+                        choice_dict[key] = chk[i].value;
+                        break;
+                    }
+                }
+            }
+
+            console.log(choice_dict);
+
+            for(var key in mydict){
+                var i = 0;
+
+                for(var para in choice_dict){
+                    
+                    if (String(mydict[key][para]) == choice_dict[para]){
+                        i += 1;
+                    }
+
+                    else{
+                        break;
+                    }
+
+                    if (i == Object.keys(choice_dict).length){
+                        val_score2 = mydict[key]['val_score'];
+                        train_score2 = mydict[key]['train_score'];
+                    }
+                }
+            }
+
+            console.log(val_score2);
+            console.log(train_score2);
+
+            if(xValues){
+
+                myChart = new Chart("myChart", {
+                    type: "line",
+                    data: {
+                        labels: xValues,
+                        datasets: [{ 
+                        data: val_score2,
+                        borderColor: "red",
+                        fill: false,
+                        label: 'Validation Score'
+                        }, 
+                        { 
+                        data: train_score2,
+                        borderColor: "green",
+                        fill: false,
+                        label: 'Training Score'
+                        }]
+                    },
+                    options: {
+                        legend: {display: true},
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            else {
+                var xlabel = ['Training Score','Validation Score'];
+                var values = [];
+
+                values.push(train_score[0]);
+                values.push(val_score[0]);
+
+                myChart = new Chart("myChart", {
+                    type: "bar",
+                    data: {
+                        labels: xlabel,
+                        datasets: [{
+                        backgroundColor: "red",
+                        data: values
+                        }]
+                    },
+                    options: {
+                        legend: {display: false},
+                        scales: {
+                        yAxes: [{
+                            ticks: {
+                            beginAtZero: true
+                            }
+                        }],
+                        },
+                        maintainAspectRatio: false
+                    }
+                    });
+            }
+            
+            return true;
+        }
+
+    </script>
+    
+</body>
+</html>
