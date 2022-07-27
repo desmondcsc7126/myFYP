@@ -1497,14 +1497,15 @@ def dataModelling(df_modelling_dict, model_choice, x, modelType, label_class):
 
     for model in func_dict:
         if model in model_choice:
-            try:
-                func_dict[model](data_dict, model_dict, final_model_dict['model'], x)
-            except:
-                errorMsg = model + "Error"
-                x.updateProgress(20,errorMsg)
-                for key in final_model_dict['model']:
-                    if key == model:
-                        del final_model_dict['model'][model]
+            func_dict[model](data_dict, model_dict, final_model_dict['model'], x)
+            #try:
+            #    func_dict[model](data_dict, model_dict, final_model_dict['model'], x)
+            #except:
+            #    errorMsg = model + "Error"
+            #    x.updateProgress(20,errorMsg)
+            #    for key in final_model_dict['model']:
+            #        if key == model:
+            #            del final_model_dict['model'][model]
 
 
     for key in final_model_dict['model']:
