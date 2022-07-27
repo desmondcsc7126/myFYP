@@ -1321,7 +1321,7 @@ def dataModelling(df_modelling_dict, model_choice, x, modelType, label_class):
             'Name':'Random Forest Classifier',
             'Parameter List' :{
                 'max_depth' : [n for n in range(2,30,2)],
-                'criterion' : ['gini', 'entropy', 'log_loss'],
+                'criterion' : ['gini', 'entropy'],
                 'min_samples_split' : [2,3,4],
                 # 'ccp_alpha' : np.arange(0,1.1,0.1)
                 'ccp_alpha' : [0, 0.01, 0.05, 0.1]
@@ -1390,7 +1390,7 @@ def dataModelling(df_modelling_dict, model_choice, x, modelType, label_class):
             'Name':'Decision Tree Classifier',
             'Parameter List' :{
                 'max_depth' : [n for n in range(2,30,2)],
-                'criterion' : ['gini', 'entropy', 'log_loss'],
+                'criterion' : ['gini', 'entropy'],
                 'min_samples_split' : [2,3,4],
                 'ccp_alpha' : [0, 0.01, 0.05, 0.1]
             },
