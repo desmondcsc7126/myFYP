@@ -6,4 +6,9 @@ cd myFYP
 sudo pip3 install flask
 sudo pip3 install pymysql
 sudo pip3 install boto3
+sudo pip3 install numpy
+sudo pip3 install pandas
+sudo pip3 install scikit-learn
+sudo pip3 install xgboost
+sudo pip3 install itsdangerous
 sudo python3 application.py
