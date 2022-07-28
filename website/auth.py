@@ -467,9 +467,16 @@ def cleanDataMain():
         
     x.updateProgress(20,'Data Cleaning Done')
 
-    thread = threading.Thread(target=backgroundTask, args=(x,dict,model_choice,modelType,filename,df_dict,cleanMethodDict,username,))
+    #thread = threading.Thread(target=backgroundTask, args=(x,dict,model_choice,modelType,filename,df_dict,cleanMethodDict,username,))
+    thread = threading.Thread(target=backgroundTask2)
     thread.start()
 
+    return "True"
+
+def backgroundTask2():
+    x = 1;
+    x = x + 3
+    print(x)
     return "True"
 
 def backgroundTask(x, dict, model_choice, modelType, fname, df_dict, cleanMethodDict, username):
