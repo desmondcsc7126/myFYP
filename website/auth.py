@@ -496,7 +496,45 @@ def backgroundTask(x, dict, model_choice, modelType, fname, df_dict, cleanMethod
     df_modelling_dict, drop_col, label_class = scalingLabelling(df_dict, df_date_extracted, dict['target'], x)
     x.updateProgress(30,'Data Modelling in progress.....')
 
-    
+    if modelType == 'Classification':
+        final_model_dict = dataModelling(df_modelling_dict,model_choice, x, modelType, label_class)
+    else:
+        final_model_dict = regression(df_modelling_dict, model_choice, x, modelType)
+
+    summary_dict = {
+        'model_dict': final_model_dict.copy(),
+        'data_dict' : cleanMethodDict.copy(),
+        'drop_col' : drop_col.copy(),
+        'verify' : True
+    }
+
+    x.updateTaskFinish(True,summary_dict)
+
+    if username != '':
+        # Store file in s3
+        cursor = db_conn.cursor()
+        sql = "select count(*) from modelHist where username = %s"
+        cursor.execute(sql,(username, ))
+        data = cursor.fetchone()
+        seq = data[0] + 1
+        cursor.close()
+
+        dictName = username + "_" + str(seq) + '.json'
+        s3.Bucket(custombucket).put_object(Key=dictName, Body=json.dumps(summary_dict))
+
+        # Store filename in database
+        insert_sql = "INSERT INTO modelHist VALUES (%s, %s, %s, %s, %s)"
+        
+        now = str(datetime.datetime.now())
+
+        cursor = db_conn.cursor()
+
+        try:
+            cursor.execute(insert_sql,(username, now, fname, dictName, modelType))
+            db_conn.commit()
+
+        finally:
+            cursor.close()
 
     return True
 
