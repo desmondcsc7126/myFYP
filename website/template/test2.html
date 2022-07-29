@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>test2</h1>
+    <div id="testing">
+        ababa /n sadasdasdads
+
+    </div>
+
+    <form action="/detailReport" method="post">
+        <input type="text" name="modelDict" value="Hi">
+        <input type="text" name="mName" value="Bye">
+        <button type="submit"  formtarget="_blank" style="all: unset; cursor: pointer;"> View Detail </button>
+    </form>
+
+    <input type="radio" value="asdasdsa" id="asdasd" name="asdasd">
+    
+
+    <button onclick="myFunction()">Click me</button>
+
+    <button onclick="assign()">Assign</button>
+    <button onclick="console1()">Console</button>
+
+    <div id="myText"></div>
+
+    <script>
+        var x = 0;
+
+        console.log(x);
+
+        function assign(){
+            x = 1;
+        }
+
+        function console1(){
+            console.log(x);
+        }
+
+        let ipt = document.createElement('input');
+        ipt.type = "checkbox";
+        ipt.id = "1";
+        ipt.name = "1";
+        ipt.value = "1";
+        let lbl = document.createElement('label');
+        lbl.setAttribute("for", "1")
+        lbl.innerHTML = "1";
+        document.getElementById("testing").appendChild(ipt);
+        document.getElementById("testing").appendChild(lbl);
+
+        function sleep(milliseconds) {
+            const date = Date.now();
+            let currentDate = null;
+            do {
+                currentDate = Date.now();
+            } while (currentDate - date < milliseconds);
+        }
+
+        function myFunction(){
+
+            console.log('Inside the function')
+
+            var request = new XMLHttpRequest();
+            request.open("POST","/progress");
+            request.send();
+
+            console.log(request.readyState);
+            console.log(request.status);
+
+            request.onreadystatechange = function() {
+
+                if (request.readyState==4 && request.status==200){
+                    document.getElementById("myText").innerHTML = request.responseText;
+                }
+            }
+
+            // const myTimeout = setTimeout(progressFunc, 3000);
+        }
+
+        function progressFunc(){
+            var request2 = new XMLHttpRequest();
+            request2.open("POST","/timer");
+            request2.send();
+
+            request2.onreadystatechange = function() {
+
+                if (request2.readyState==4 && request2.status==200){
+                    document.getElementById("myText").innerHTML = request2.responseText;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

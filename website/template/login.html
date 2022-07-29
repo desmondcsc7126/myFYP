@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/navbar.css">
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    <title>Document</title>
+
+    <style>
+        input{
+            all: unset;
+            border-bottom: 2px solid gray;
+        }
+
+        #loginRegBtn button{
+            all: unset;
+            background-color: rgb(126, 126, 239);
+            text-align: center;
+            padding: 10px 3px;
+            width: 50%;
+            font-weight: bold;
+            color: azure;
+            border-radius: 10px;
+        }
+
+        #loginRegBtn button:hover{
+            cursor: pointer;
+        }
+
+        #loginRegBtn{
+            border-radius: 10px;
+        }
+
+        .submitBtn{
+            all: unset;
+            background-color: blueviolet;
+            padding: 5px;
+            width: 40%;
+            text-align: center;
+            font-size: 2vh;
+            border-radius: 10px;
+            color: azure;
+            font-weight: bold;
+        }
+
+        .submitBtn:hover{
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body style="background-color: rgb(219, 250, 236); height: 100vh; margin: 0; background-image: url(../static/wallpaper2.webp); background-size: cover;">
+
+    <div class="sidenav">
+        <div class="naviOpt">
+            <form action="/beforeModelling" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="username" value="{{username}}">
+                <button type="submit">Data Modelling</button>
+            </form>
+            <a href="#">About</a>
+            {% if username %}
+                <form action="/modelHist" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="username" value="{{username}}">
+                    <button type="submit">Modelling History</button>
+                </form>
+            {% else %}
+                <form action="/modelHist" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="username" value="{{username}}">
+                    <button type="submit" style="pointer-events: none;">Modelling History</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="myProfile" style="width: 300px; height: 250px; background-color:rgb(53, 51, 51); text-align: center;">
+            <!-- <img src="../static/profile.png" style="background-color: transparent;"> -->
+            <i class='bx bx-user' style="font-size:130px; color: aliceblue; padding: 5px; border: 2px solid white; border-radius: 50%;"></i>
+            <p style="color: white; margin: 5px 0; font-size: 20px;" id="username">
+                {% if username %}
+                    {{username}}
+                {% else %}
+                    Anonymous
+                {% endif %}
+            </p>
+
+            <a href="/login" style="padding: 15px 0; display: flex; justify-content: center;" id="login">
+                <i class='bx bx-log-in' style="padding-right: 10px;"></i>
+                <span style="padding-right: 10px ;">Login</span>
+            </a>
+
+            <a href="/logout" style="padding: 15px 0; display: none; justify-content: center;" id="logout">
+                <i class='bx bx-log-out' style="padding-right: 10px;"></i>
+                <span style="padding-right: 10px;">Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main" style="height: 100%; display:flex; flex-direction:column; margin-left: 300px; font-family:sans-serif;">
+
+        <div style="align-self: center; background-color:white; height:55%; width:50vh; margin-top: 22.5vh; font-size: 2vh; display: flex; flex-direction: column; justify-content: center; box-shadow: 0px 0px 2px 2px rgb(193, 193, 193);  position: relative;">
+
+            <div id="loginRegBtn" style="align-self: center; width: 60%; display: flex; justify-content:center; box-shadow: 0px 0px 2px 2px rgb(193, 193, 193); position: absolute; top: 5vh;">
+                <button id="loginBtn" onclick="clickLogin()">Login</button>
+                <button id="regBtn" onclick="clickReg()" style="background-color: white; color:black;">Registration</button>
+            </div>
+            
+            <div id="loginBox" style="display: block;">
+                <form action="/authentication" enctype="multipart/form-data" method="post" style="display: flex; flex-direction:column; align-items:center; justify-content: center;">
+
+
+                    <input type="text" id="username" name="username" placeholder="Username" style="width: 60%; height: 25px;" required>
+
+                    <br>
+
+                    <input type="password" id="password" name="password" placeholder="Password" style="width: 60%; height: 25px;" required>
+                    <br>
+                    
+                    {% if login == 'False' %}
+                        <span style="color: red;position: absolute; bottom:10vh;">Login Fail</span>
+                    {% endif %}
+
+                    <div style="display: flex; justify-content:space-between; width:60%; position: absolute; bottom: 5vh;">
+                        <button class="submitBtn" type="submit">Login</button> 
+                        <a href="/forgotPassword" style="font-size: 1.5vh; margin-top: 8px;">Forgot Password</a>
+                    </div>
+                </form>
+
+            </div>
+
+            <!-- {% if login == "False" %}
+                <p>Login Fail</p>
+            {% endif %} -->
+
+
+            <!-- <a href="/registration">Sign Up</a> -->
+
+            <div id="regBox" style="display: none;">
+                <div style="display: flex; flex-direction:column; align-items:center; justify-content: center;">
+                    
+                    <input type="text" id="email" name="email" placeholder="Email" style="width: 60%; height: 25px;" required>
+                    <br>
+
+                    <input type="text" id="username1" name="username" placeholder="Username" style="width: 60%; height: 25px;" required>
+
+                    <br>
+
+                    <input type="password" id="password1" name="password" placeholder="Password" style="width: 60%; height: 25px;" required>
+                    <br>
+
+                    <input type="password" id="cfmpassword" name="cfmpassword" placeholder="Confirm Password" style="width: 60%; height: 25px;" required>
+                    <br>
+
+                    <span id="warning" style="color: red;position: absolute; bottom:10vh;"></span>
+
+                    <div style="display: flex; justify-content:center; width:60%; position: absolute; bottom: 5vh;">
+                        <button class="submitBtn" onclick="register()">Register</button> 
+                        <!-- <a href="/forgotPassword" style="font-size: 2vh;">Forgot Password</a> -->
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+
+    </div>
+
+    <script>
+        var un = '{{username}}';
+        console.log(un);
+        let login = document.getElementById('login');
+        let logout = document.getElementById('logout');
+        if(un == ''){
+            login.style.display = "flex";
+            logout.style.display = "none";
+        }
+        else{
+            login.style.display = "none";
+            logout.style.display = "flex";
+        }
+
+        let loginBtn = document.getElementById('loginBtn');
+        let regBtn = document.getElementById('regBtn');
+        let loginBox = document.getElementById('loginBox');
+        let regBox = document.getElementById('regBox');
+
+        function clickLogin(){
+            loginBtn.style.color = 'azure';
+            loginBtn.style.backgroundColor = 'rgb(126, 126, 239)';
+
+            regBtn.style.color = 'black';
+            regBtn.style.backgroundColor = 'white';
+
+            loginBox.style.display = 'block';
+            regBox.style.display = 'none';
+        }
+
+        function clickReg(){
+            regBtn.style.color = 'azure';
+            regBtn.style.backgroundColor = 'rgb(126, 126, 239)';
+
+            loginBtn.style.color = 'black';
+            loginBtn.style.backgroundColor = 'white';
+
+            loginBox.style.display = 'none';
+            regBox.style.display = 'block';
+        }
+
+        function register(){
+            let warning = document.getElementById('warning');
+            var email = document.getElementById('email').value;
+            var username = document.getElementById('username1').value;
+            var password = document.getElementById('password1').value;
+            var cfmPassword = document.getElementById('cfmpassword').value;
+
+            console.log(email);
+            console.log(username);
+            console.log(password);
+            console.log(cfmPassword);
+
+            if(email == '' || username == '' || password == '' || cfmPassword == ''){
+                warning.innerHTML = 'Please fill in all the fields.'
+            }
+            else if(cfmPassword != password){
+                warning.innerHTML = 'Please ensure the reenter password is correct.'
+            }
+            else{
+                let formData = new FormData();
+                formData.append('email',email);
+                formData.append('username',username);
+                formData.append('password',password);
+
+                var request = new XMLHttpRequest();
+                request.open("POST","/registerUser");
+                request.send(formData);
+
+                request.onreadystatechange = function() {       
+                    if (request.readyState==4 && request.status==200){
+                        var response = request.responseText;
+                        if (response == "Fail"){
+                            warning.innerHTML = "Repeated Username.";
+                        }
+                        else{
+                            alert("Registration Success");
+                            location.reload();
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+</body>
+</html>
