@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <link rel="stylesheet" href="../static/navbar.css">
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        table{
+            border-spacing: 0px;
+            border: 1px solid black;
+        }
+
+        .colName{
+            background-color: rgb(146, 40, 245);
+            font-weight: bold;
+            color: white;
+            font-family:sans-serif;
+        }
+
+        .colName td{
+            padding: 5px 3px;
+        }
+
+        td{
+            border-bottom: 1px solid black;
+            padding: 3px;
+        }
+
+    </style>
+</head>
+<body style="background-color: rgb(219, 250, 236); height: 1500px; margin: 0; background-image: url(../static/wallpaper2.webp); background-size: cover;">
+    <div class="sidenav">
+        <div class="naviOpt">
+            <form action="/beforeModelling" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="username" value="{{username}}">
+                <button type="submit">Data Modelling</button>
+            </form>
+            <a href="/about" target="_blank">About</a>
+            {% if username %}
+                <form action="/modelHist" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="username" value="{{username}}">
+                    <button type="submit">Modelling History</button>
+                </form>
+            {% else %}
+                <form action="/modelHist" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="username" value="{{username}}">
+                    <button type="submit" style="pointer-events: none;">Modelling History</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="myProfile" style="width: 300px; height: 250px; background-color:rgb(53, 51, 51); text-align: center;">
+            <!-- <img src="../static/profile.png" style="background-color: transparent;"> -->
+            <i class='bx bx-user' style="font-size:130px; color: aliceblue; padding: 5px; border: 2px solid white; border-radius: 50%;"></i>
+            <p style="color: white; margin: 5px 0; font-size: 20px;" id="username">
+                {% if username %}
+                    {{username}}
+                {% else %}
+                    Anonymous
+                {% endif %}
+            </p>
+
+            <a href="/login" style="padding: 15px 0; display: flex; justify-content: center;" id="login">
+                <i class='bx bx-log-in' style="padding-right: 10px;"></i>
+                <span style="padding-right: 10px ;">Login</span>
+            </a>
+
+            <a href="/logout" style="padding: 15px 0; display: none; justify-content: center;" id="logout">
+                <i class='bx bx-log-out' style="padding-right: 10px;"></i>
+                <span style="padding-right: 10px ;">Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main" style="height: 100%; display:flex; flex-direction:column; margin-left: 300px;">
+
+        <div style="padding: 2% 3%; font-size: 50px; font-family:sans-serif; font-weight: bold; margin-top: 0; width:fit-content; background-color: rgb(53, 51, 51); color: aliceblue;">
+            Data Modelling Result Dashboard
+        </div>
+
+        <div style="height: 100%;display: flex; flex-direction:column; justify-content:space-around;">
+
+            <div style="background-color: rgb(255, 255, 255); width: 80%; height: 500px; box-shadow: 0px 0px 2px 2px rgb(193, 193, 193); margin-left: 40px;">
+                <canvas id="myChart" style="width:100%;"></canvas>
+            </div>
+
+            <div id="tableContainer" style="background-color: rgb(255, 255, 255); width: 80%; box-shadow: 0px 0px 2px 2px rgb(193, 193, 193); height: fit-content; margin-left: 40px;">
+
+                <table id="myTable" style="width: 100%;">
+                    Model Performance Detail
+
+                    {% if modelType == 'Classification' %}
+
+                    <tr class="colName">
+                        <td class="colname" style="width:20%"> Algorithm Name</td>
+                        <td class="colname" style="width:10%"> Accuracy</td>
+                        <td class="colname" style="width:17%"> Precision</td>
+                        <td class="colname" style="width:18%"> Recall</td>
+                        <td class="colname" style="width:20%"> Optimal Parameter</td>
+                        <td class="colname" style="width:10%"></td>
+                        <td class="colname" style="width:5%"> Model file</td>
+                    </tr>
+
+                        {% for key in myResult %}
+                        <tr class="modelData">
+                            <td> {{myResult[key]['Name']}} </td>
+                            <td> {{myResult[key]['Accuracy']}} </td>
+                            <td> 
+                                {% for label in myResult[key]['label_dict'] %}
+                                    {{ myResult[key]['label_dict'][label]['label'] }} : {{ myResult[key]['label_dict'][label]['precision'] }} 
+                                    
+                                {% endfor %}
+                            </td>
+                            <td> 
+                                {% for label in myResult[key]['label_dict'] %}
+                                    {{ myResult[key]['label_dict'][label]['label'] }} : {{ myResult[key]['label_dict'][label]['recall'] }} 
+                                    
+                                {% endfor %} 
+                            </td>
+                            <td>
+                            {% if key != 'GNB' and key != 'BNB' %}
+                                {% for para in myResult[key]['Optimal Parameter'] %}
+                                    {{para}}: {{myResult[key]['Optimal Parameter'][para]}} <br>
+                                {% endfor %}
+                            {% else %}
+                                No Parameter
+                            {% endif %}
+                            </td>
+                            <td>
+                                {% if key != 'GNB' and key != 'BNB' %}
+                                <form action="/detailReport" method="post">
+                                    <input type="hidden" name="modelDict" value="{{myResult[key]}}">
+                                    <input type="hidden" name="mName" value="{{key}}">
+                                    <input type="hidden" name="username" value="{{username}}">
+                                    <button type="submit"  formtarget="_blank" style="all: unset; cursor: pointer;"> View Detail </button>
+                                </form>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="/downloadModel/{{modelFile[key]['name']}}" target="_blank">Download</a>
+                            </td>
+                        </tr>
+                        
+                        {% endfor %}
+
+                    {% else %}
+
+                    <tr class="colName">
+                        <td class="colname" style="width:15%"> Algorithm Name</td>
+                        <td class="colname" style="width:15%"> r2_score</td>
+                        <td class="colname" style="width:15%"> Mean Squared Error</td>
+                        <td class="colname" style="width:20%"> Optimal Parameter</td>
+                        <td class="colname" style="width:10%"></td>
+                        <td class="colname" style="width:10%"> Model file</td>
+                    </tr>
+
+                        {% for key in myResult %}
+                        <tr class="modelData">
+                            <td> {{myResult[key]['Name']}} </td>
+                            <td> {{myResult[key]['r2_score']}} </td>
+                            <td> {{myResult[key]['Mean Squared Error']}} </td>
+                            <td>
+                                {% for para in myResult[key]['Optimal Parameter'] %}
+                                    {{para}}: {{myResult[key]['Optimal Parameter'][para]}} <br>
+                                {% endfor %}       
+                            </td>
+                            <td>
+                                {% if key != 'GNB' and key != 'BNB' %}
+                                <form action="/detailReport" method="post">
+                                    <input type="hidden" name="modelDict" value="{{myResult[key]}}">
+                                    <input type="hidden" name="mName" value="{{key}}">
+                                    <input type="hidden" name="username" value="{{username}}">
+                                    <button type="submit"  formtarget="_blank" style="all: unset; cursor: pointer;"> View Detail </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="/downloadModel/{{modelFile[key]['name']}}" target="_blank">Download</a>
+                                {% if key == 'PLR' %}
+                                    *Polynomial Features file
+                                {% endif %}
+                            </td>
+                        </tr>
+                        
+                        {% endfor %}
+
+                    {% endif %}
+                        * Polynomial Regression is different from others. Please refer to the official website.
+                </table>
+
+            </div>
+
+            <div style=" background-color: white; box-shadow: 0px 0px 2px 2px rgb(193, 193, 193); margin-left: 40px; width: 80%;">
+
+                <table id="dataTable" style="width: 100%;">
+                    * Only show poor quality data columns that might affect performance
+                    <tr class="colName">
+                        <td style="width:20%">Column Name</td>
+                        <td style="width:40%">Problem</td>
+                        <td style="width:40%">Data Cleaning/Transformation Method</td>
+                    </tr>
+
+                    {% for colName in dataClean %}
+                    {% if dataClean[colName]['problem'] %}
+                    <tr class="data">
+                        <td>{{colName}}</td>
+                        <td>
+                            {% for problem in dataClean[colName]['problem'] %}
+                                {{problem}} <br>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for method in dataClean[colName]['method'] %}
+                                {{method}} <br>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+
+                </table>
+
+            </div>
+
+            <div style=" background-color: white; box-shadow: 0px 0px 2px 2px rgb(193, 193, 193); margin-left: 40px; width: 80%;">
+
+                <table style="width: 100%;">
+                    <tr class="colName">
+                        <td style="width:20%;">Others</td>
+                        <td>Description</td>
+                    </tr>
+
+                    <tr>
+                        <td>Dropped Column</td>
+                        <td>{{drop_col}}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Scaling Method</td>
+                        <td>Standard Scaled Data</td>
+                    </tr>
+
+                    {% if filename %}
+                    <tr>
+                        <td>Cleaned File</td>
+                        <td>
+                            <a href="../static/{{filename}}" download>Click to download cleaned file</a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        var un = '{{username}}';
+        console.log(un);
+        let login = document.getElementById('login');
+        let logout = document.getElementById('logout');
+        if(un == ''){
+            login.style.display = "flex";
+            logout.style.display = "none";
+        }
+        else{
+            login.style.display = "none";
+            logout.style.display = "flex";
+        }   
+        
+        var summaryDict = '{{myResult|tojson}}';
+        summaryDict = JSON.parse(summaryDict);
+
+        var modelType = '{{modelType}}';
+        console.log(modelType);
+
+        var xAxisName;
+        if(modelType == 'Regression'){
+            xAxisName = 'r2_score';
+        }
+        else{
+            xAxisName = 'Accuracy';
+        }
+
+        var x = [];
+        var y = [];
+
+        for(var key in summaryDict){
+            x.push(key);
+            y.push(summaryDict[key][xAxisName]);
+        }
+
+        // console.log(Math.min.apply(Math,y));
+
+        myChart = new Chart("myChart", {
+            type: "bar",
+            data: {
+                labels: x,
+                datasets: [{
+                backgroundColor: "blue",
+                data: y
+                }]
+            },
+            options: {
+                legend: {display: false},
+                scales: {
+                yAxes: [{
+                    ticks: {
+                    beginAtZero: false
+                    }
+                }
+                ],
+                },
+                title:{
+                    display : true,
+                    text : "Model Accuracy Comparisons"
+                },
+                maintainAspectRatio: false,
+                scales:{
+                    xAxes:[{
+                        display:true,
+                        scaleLabel:{
+                            display:true,
+                            labelString:'Algorithm'
+                        }
+                    }],
+                    yAxes:[{
+                        display:true,
+                        scaleLabel:{
+                            display:true,
+                            labelString:'Accuracy'
+                        },
+                        ticks:{
+                            min: Math.min.apply(Math,y) - 0.1,
+                            max : 1
+                        }
+                    }]
+                }
+            }
+            });
+
+    </script>
+
+</body>
+</html>
