@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+
+    <style>
+        .algo{
+            font-size: 4vh; 
+            position: absolute; 
+            top: 1vh;
+            border-bottom: 1px solid black;
+        }
+
+        .algoBlk{
+            width: 25%; 
+            height:93%;
+            margin: 2vh; 
+            box-shadow: 0px 0px 2px 2px rgb(228, 228, 228); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; 
+            flex-direction: column;
+        }
+
+        .algoBlk p{
+            margin: 1vh;
+        }
+
+        .step{
+            width: 43%;
+            height: 43%;
+            background-color: rgba(255, 255, 255, 0.9);
+            margin: 2%;
+            box-shadow: 0px 0px 2px 2px rgb(228, 228, 228);
+        }
+
+        .stepWord{
+            color: grey;
+            font-size: 3vh; 
+            margin:1vh; 
+            font-weight:bold; 
+            border-bottom:1px solid rgb(201, 201, 201);
+        }
+    </style>
+</head>
+<body style="height: 200vh; background-color:azure; margin: 0; font-family:sans-serif;">
+    <div style="height: 40vh; background-color:grey; font-size: 10vh; color: rgb(234, 249, 255); display: flex; align-items: center; justify-content: center; background-image: url(../static/wallpaper3.webp);">
+        <p style="margin:0; font-weight: bold;">About This System</p>
+    </div>
+    <div style="height: 60vh; background-color: rgb(255, 255, 255); font-size: 2.5vh; display: flex;">
+        <div style="width: 50%; height:100%; display: flex; align-items: center; justify-content: center;">
+            <p style="padding: 0 5vh;">The system aims to automate the repetitive data cleaning and modelling process with 
+            simple parameter tuning for each model. General report of each chosen algorithm performance on uploaded 
+            dataset will be shown in visual. An interactive graph visualization on how parameters affect the model performance will 
+            be presented to help users in their own data modelling process. This system can help the users in knowing the 
+            poor quality data column and algorithm and parameters that are more appropriate for the respective dataset, which 
+            can help to eleminate some unnecessary process in finding the optimal model for their projects. Only supervised 
+            learning which are classification and regression are available for the system. Complex processes such as image processing
+            and natural language process are currently unavailable.</p>
+        </div>
+        <div class="algoBlk" style="background-color: rgb(241, 248, 255);">
+            <span class="algo">Classification Algorithm</span>
+            <p>K Nearest Neighbors Classifier</p>
+            <p>Random Forest Classifier</p> 
+            <p>Decision Tree Classifier</p>
+            <p>Logistic Regression</p>
+            <p>Support Vector Machine Classiffier</p>
+            <p>XGBoost</p>
+            <p>Naive Bayes</p>
+            
+        </div>
+        <div class="algoBlk" style="background-color: rgb(255, 240, 254);">
+            <span class="algo">Regression Algorithm</span>
+            <p>K Nearest Neighbors Regressor</p>
+            <p>Random Forest Regressor</p> 
+            <p>Decision Tree Regressor</p>
+            <p>Linear Regression</p>
+            <p>Support Vector Machine Regressor</p>
+            <p>Polynomial Regression</p>
+        </div>
+    </div>
+
+    <div style="background-color: rgb(248, 231, 255); height:100vh; display: flex; flex-wrap: wrap; justify-content: center; background-image: url(../static/wallpaper4.jpg); background-size: cover;">
+
+        <div class="step">
+            <p class="stepWord">Step 1: Upload and verify file</p>
+            <div>
+                <img src="../static/step1_1.JPG" style="width: 50%;">
+            </div>
+            <p style="font-size: 1.5vh;">Ensure that the verification of the file is success beased on the stated requirement.</p>
+            <div>
+                <img src="../static/step1_2.JPG" style="width: 50%;">
+            </div>
+        </div>
+        <div class="step">
+            <p class="stepWord">Step 2: Choose machine learning type and algorithm</p>
+            <div>
+                <img src="../static/step2_1.JPG" style="width: 50%;">
+            </div>
+            <div>
+                <img src="../static/step2_2.JPG" style="width: 30%;">
+            </div>
+            <p style="font-size: 1.5vh;">Algorithm will differ based on the chosen model type.</p>
+        </div>
+        <div class="step">
+            <p class="stepWord">Step 3: Choose target column.</p>
+            <div style="display: flex; justify-content: space-around;">
+                <img src="../static/step3_1.JPG" style="width: 30%;">
+                <div>
+                    <p style="font-size: 1.5vh ;">After clicking button 'select'</p>
+                    <img src="../static/step3_2.JPG" style="width: 50%;">
+                </div>
+            </div>
+            <p style="font-size: 1.5vh;">Target column must be chosen while index column is optional.</p>
+        </div>
+        <div class="step">
+            <p class="stepWord">Step 4: Wait for the data modelling process</p>
+            <div style="display: flex; justify-content:space-around;">
+                <img src="../static/step4_1.JPG" style="width: 50%;">
+                <img src="../static/step4_2.JPG" style="width: 50%;">
+            </div>
+            <p style="font-size: 1.5vh;">Clicking on the refresh button a top right corner will check the current progress
+                 as data cleaning and modelling can be time consuming. Report will be availale once the process complete.</p>
+        </div>
+
+    </div>
+    
+</body>
+</html>

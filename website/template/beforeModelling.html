@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Action Interface</title>
+    <!--
+    <script src="test1.js" defer></script>
+    -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../static/navbar.css">
+
+    <style>
+
+        .dot {
+            height: 15px;
+            width: 15px;
+            background-color: rgb(255, 255, 255);
+            border-radius: 50%;
+            display: inline-block;
+            margin: 5px;
+            margin-top: 6%;
+            border: 1px solid black;
+        }
+
+        .btn{
+            background-color: rgb(255, 130, 35); 
+            color:white; 
+            width: 80px; 
+            text-align: center; 
+            padding: 5px; 
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            padding-bottom: 3px;
+            font-weight: bold;
+        }
+
+        .btn2{
+            background-color: rgb(82, 82, 255); 
+            color:white; 
+            width: 80px; 
+            text-align: center; 
+            padding: 5px; 
+            position: absolute;
+            bottom: 20px;
+            left: 25px;
+            padding-bottom: 3px;
+            font-weight: bold;
+        }
+
+        .btn:hover, .btn2:hover{
+            cursor: pointer;
+            background-color: aquamarine;
+        }
+
+        .line{
+            width: 100%;
+            height: 47px;
+            border-bottom: 1px solid rgb(194, 191, 191);
+        }
+
+        .step{
+            font-size: 35px;
+            font-weight: bolder;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid grey;
+        }
+
+        .modeltype{
+            margin-left:50px; 
+            border: 1px solid black; 
+            padding: 10px 10px 10px 10px; 
+            text-align: center;
+        }
+
+        .modeltype:hover{
+            cursor: pointer;
+            background-color: rgb(216, 243, 243);
+        }
+
+        #popOutWindow{
+            vertical-align: middle;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .col{
+            all:unset;
+            height: 26px; 
+            padding: 10px; 
+            margin: 20px; 
+            font-size: 23px; 
+            border: 1px solid black;
+            background-color: white;
+        }
+
+        .col:hover{
+            background-color: gray;
+            cursor: pointer;
+        }
+
+        .cc{
+            width: fit-content;
+            height: 15px;
+            padding: 3px 10px;
+            border: 1px solid black;
+            font-size: 13px;
+            background-color: aquamarine;
+        }
+
+        i:hover{
+            cursor: pointer;
+        }
+
+        .rowData{
+            padding: 7px;
+            font-size: 12px;
+        }
+
+        #submit_btn{
+            all: unset;
+            border: 5px solid rgb(197, 197, 222);
+            padding: 5px;
+            color: rgb(197, 197, 222);
+            font-weight: bold;
+            border-radius: 15px;
+            position: absolute;
+        }
+
+        #submit_btn:hover{
+            border: 5px solid greenyellow;
+            color: greenyellow;
+            cursor: pointer;
+        }
+
+        .actBox{
+            display: flex; 
+            flex-direction:column; 
+            justify-content: space-around; 
+            height: 100%; 
+            padding: 0px;
+        }
+    </style>
+</head>
+<body style="background-color: rgb(219, 250, 236); height: 1100px; margin: 0; background-image: url(../static/wallpaper2.webp); background-size: cover;">
+
+    <div class="sidenav">
+        <div class="naviOpt">
+            <form action="/beforeModelling" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="username" value="{{username}}">
+                <button type="submit">Data Modelling</button>
+            </form>
+            <a href="/about" target="_blank">About</a>
+            {% if username %}
+                <form action="/modelHist" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="username" value="{{username}}">
+                    <button type="submit">Modelling History</button>
+                </form>
+            {% else %}
+                <form action="/modelHist" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="username" value="{{username}}">
+                    <button type="submit" style="pointer-events: none;">Modelling History</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="myProfile" style="width: 300px; height: 250px; background-color:rgb(53, 51, 51); text-align: center;">
+            <!-- <img src="../static/profile.png" style="background-color: transparent;"> -->
+            <i class='bx bx-user' style="font-size:130px; color: aliceblue; padding: 5px; border: 2px solid white; border-radius: 50%;"></i>
+            <p style="color: white; margin: 5px 0; font-size: 20px;" id="username">
+                {% if username %}
+                    {{username}}
+                {% else %}
+                    Anonymous
+                {% endif %}
+            </p>
+
+            <a href="/login" style="padding: 15px 0; display: flex; justify-content: center;" id="login">
+                <i class='bx bx-log-in' style="padding-right: 10px;"></i>
+                <span style="padding-right: 10px ;">Login</span>
+            </a>
+
+            <a href="/logout" style="padding: 15px 0; display: none; justify-content: center;" id="logout">
+                <i class='bx bx-log-out' style="padding-right: 10px;"></i>
+                <span style="padding-right: 10px;">Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main" style="height: 100%; display:flex; flex-direction:column; margin-left: 300px;">
+    
+        <div style="padding: 2% 3%; font-size: 50px; font-family:sans-serif; font-weight: bold; margin-top: 0; width:fit-content; background-color: rgb(53, 51, 51); color: aliceblue;">
+            Data Modelling
+        </div>
+
+        <!-- {% if success %}
+        <div>
+            <h2>Done cleaning</h2>
+            <a href="../static/{{success}}" download="testing_cleaned">Download</a>
+        </div>
+        {% endif %} -->
+
+        <div style="text-align:center">
+            <span class="dot" id="dot1" style="background-color: rgb(19, 255, 19);"></span>
+            <span class="dot" id="dot2"></span>
+            <span class="dot" id="dot3"></span>
+        </div>
+
+        <div id="userAction" style="background-color: white; padding:30px; width:60%; 
+        height:60%; align-self: center; display: flex; flex-direction: column; justify-content: center;
+        font-size: 20px; font-family:sans-serif; position: relative; margin-top: 1%; box-shadow: 0px 0px 2px 2px rgb(193, 193, 193);">
+
+            <div class="actBox" id="colDisplay" class="dataCleaning" style="display: flex;">
+
+                <!-- Upload File -->
+                <div>
+                    <p class="step">Step 1</p>
+                    <p>Upload your file here<span style="color: red;">*</span> </p>
+                    <p style="font-size: 13px; color:rgb(238, 45, 15);">Requirement: <br><br> 
+                        1. Must be CSV file. <br>
+                        2. It is better to specify each column names in each file for later process. <br>
+                        3. Data should be structured and organised column by column. <br>
+                        4. Only support structured data. Unable to perform Natural Language and Image processing.
+                    </p>
+                    <div style="display: inline;">
+                        <input id="myfile" type="file" name="myfile" onclick="reset()">
+                        <button id="uploadButton" onclick="uploadMyFile()">Verify</button>
+                    </div>
+                    <div id="myText" style="font-size: 13px;"></div>
+
+                    <div id="myText2"></div>
+                </div>
+
+
+                <div id="machineLearningModel">
+                    
+                    <p class="step">Step 2</p>
+                    <p>Choose your model<span style="color: red;">*</span></p>
+
+                    <!-- <input type="radio" class="modelType" name="modelType" id="Regression" value="Regression">
+                    <label for="Regression">Regression</label>
+                    <p></p>
+                    <input type="radio" class="modelType" name="modelType" id="Classification" value="Classification">
+                    <label for="Classification">Classification</label> -->
+
+                    <div style="display: flex;" onclick="assignModelType(event)">
+                        <div class="modeltype" id="Regression" style="margin-left: 0px;">
+                            Regression <br>
+                            <span style="font-size: 13px;">Predict Numerical Value</span>
+                        </div>
+                        <div class="modeltype" id="Classification">
+                            Classification <br>
+                            <span style="font-size: 13px;">Classify Categorical Value</span>
+                        </div>
+                    </div>
+
+                    <!-- <button onclick="displayAlgo()">Next</button> -->
+                </div>
+
+                <div style="display: flex; justify-content:flex-end;">
+                    <!-- <button id="nextBtn1">Next</button> -->
+                    <div class="btn" onclick="displayAlgo()">Next</div>
+                    <!-- <div class="btn" onclick="chk1()">Next</div> -->
+                </div>
+            </div>
+
+            <div class="actBox" id="modelDetail" style="display: none;">
+
+                <div id="model_choice_c" style="display: block;">
+                    <p class="step">Step 3</p>
+                    <p> Choose your desired algorithm* </p>
+                    <input type="checkbox" class="model" name="model" id="KNN" value="KNN">
+                    <label for="KNN">K-Nearest Neighbors</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="LGR" value="LGR">
+                    <label for="LGR">Logistic Regression</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="RFC" value="RFC">
+                    <label for="RFC">Random Forest</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="DT" value="DT">
+                    <label for="DT">Decision Tree</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="NB" value="NB">
+                    <label for="NB">Naive Bayes</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="XGBoost" value="XGBoost">
+                    <label for="XGBoost">XGBoost</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="SVM" value="SVM">
+                    <label for="SVM">Support Vector Machine</label>
+                </div>
+
+                <div id="model_choice_r" style="display: none;">
+                    <p class="step">Step 3</p>
+                    <p> Choose your desired algorithm* </p>
+
+                    <input type="checkbox" class="model" name="model" id="LR" value="LR">
+                    <label for="LR">Linear Regression</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="RFR" value="RFR">
+                    <label for="RFR">Random Forest Regression</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="DTR" value="DTR">
+                    <label for="DTR">Decision Tree Regression</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="KNNR" value="KNNR">
+                    <label for="KNNR">K-Nearest Neighbors Regression</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="PLR" value="PLR">
+                    <label for="PLR">PolynomialRegression</label>
+                    <div></div>
+                    <input type="checkbox" class="model" name="model" id="SVR" value="SVR">
+                    <label for="PLR">SupportVectorRegression</label>
+
+                </div>
+
+                <div id="chooseCol" onclick="choose_col(event)">
+
+                    <p class="step">Step 4</p>
+
+                    <div id="col_btn">
+                        <p> Choose your target column*</p>
+                        <div id="chosen_col1" class="cc" style="visibility: hidden;"></div>
+                        <button id="select1">Select</button>
+                        <button onclick="reset1()">Reset</button>
+                    </div>
+
+                    <div id="col_btn2">
+                        <p> Choose your index column</p>
+                        <div id="chosen_col2" class="cc" style="visibility: hidden;"></div>
+                        <button id="select2">Select</button>
+                        <button onclick="reset2()">Reset</button>
+                    </div>
+
+                </div>
+
+                <!-- <button id="cfmBtn" onclick="startCleaning()">Confirm</button> -->
+                <div id = "warning" style="color: red; font-size: 1.5vh;"></div>
+
+                <div style="display: flex; justify-content: space-between;">
+                    <div class="btn2" id="bckBtn1" onclick="chk2()">Back</div>
+                    <div class="btn" id="nxtBtn2" onclick="startCleaning()">Start</div>
+                </div>
+
+            </div>
+
+
+            <div class="actBox" id="progress" style="display:none;">
+                <p class="step">Progress Checking</p>
+                <div style="width: 70%; height:70%; border:1px solid black;">
+                    <table id="currentProgress" style=" width: 100%; align-self: center;">
+                        <tr>
+                            <th style="background-color: rgb(236, 237, 237); border-bottom: 1px solid; text-align: left; padding: 10px 10px; display: flex; justify-content: space-between;">
+                                <div>Process</div>
+                                <i class='bx bx-refresh' onclick="progressFunc()" style="font-size: 25px; padding:5px;font-weight: bolder; background-color: azure;"></i>
+                            </th>
+                        </tr>
+
+                    </table>
+                </div>
+
+                <!-- <p id="currentProgress">
+                </p> -->
+                <!-- <button onclick="progressFunc()">Update current progress</button> -->
+                <form action="/generalReport" id="generalReport", method="post">
+                    <input type="hidden" name="myResult" id="myResult">
+                    <input type="hidden" name="username" id="username1">
+                    <!-- <button id="submit_btn">Proceed to report</button> -->
+                </form>
+                <div style="display: flex; justify-content:flex-start;">
+                    <!-- <div class="btn2" id="bckBtn1" onclick="chk4()">Back</div> -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="popOutWindow" style="display: none; flex-direction: column; background-color: rgb(253, 253, 253); height: 500px; width: 500px;">
+        <p style="font-size: 30px; margin-left:30px;">Column Name:</p>
+        <div id="colList" style="margin-left: 30px; margin-right:30px; border: 1px solid rgb(255, 255, 255); height: 310px; background-color: aliceblue; overflow: scroll; display: flex; flex-wrap: wrap;">
+           <!-- <button class="col" value="Col1" id="Col1">Col1</button>
+           <button class="col" value="Col2" id="Col2">Col2</button> -->
+        </div>
+        <div id="popBtn">
+            <div class="btn2" onclick="cancel()">Cancel</div>
+            <div class="btn" onclick="confirmCol()">Confirm</div>
+        </div>
+    </div>
+
+
+    <script>
+        var un = '{{username}}';
+        console.log(un);
+        let login = document.getElementById('login');
+        let logout = document.getElementById('logout');
+        if(un == ''){
+            login.style.display = "flex";
+            logout.style.display = "none";
+            document.getElementById('username').value = '';
+        }
+        else{
+            login.style.display = "none";
+            logout.style.display = "flex";
+            document.getElementById('username1').value = un;
+        }
+
+        var dict = {
+            'target': null,
+            'index' : 0
+        }
+
+        var result_dict = {
+
+        }
+
+        var firstPage = document.getElementById('colDisplay');
+        var secondPage = document.getElementById('modelDetail');
+        var thirdPage = document.getElementById('progress');
+
+        var dot1 = document.getElementById('dot1');
+        var dot2 = document.getElementById('dot2');
+        var dot3 = document.getElementById('dot3');
+
+        function reset(){
+            document.getElementById('myText').innerHTML = "";
+        }
+
+        var modelType;
+
+        // function chk1(){
+        //     firstPage.style.display = "None";
+        //     secondPage.style.display = "flex";
+        // }
+
+        function chk2(){
+            firstPage.style.display = "flex";
+            secondPage.style.display = "None";
+            dot2.style.backgroundColor = "white";
+            dot1.style.backgroundColor = "rgb(19, 255, 19)";
+        }
+
+        function chk3(){
+            secondPage.style.display = "None";
+            thirdPage.style.display = "flex";
+        }
+
+        function chk4(){
+            secondPage.style.display = "flex";
+            thirdPage.style.display = "None";
+        }
+
+        function removeAllChildNodes(parent) {
+            while (parent.firstChild) {
+                parent.removeChild(parent.firstChild);
+            }
+        }
+
+        async function uploadMyFile(){
+            console.log('inside the function')
+
+            let formData = new FormData();
+            // var fileData = $("myfile").prop("files")[0]
+            console.log(myfile.files[0])
+            formData.append("file",myfile.files[0]);
+
+            //formData.append("file","hi")
+
+            console.log(formData)
+
+            var request = new XMLHttpRequest();
+            request.open("POST","/verifyFile");
+            request.send(formData);
+
+            request.onreadystatechange = function() {
+                
+                if (request.readyState==4 && request.status==200){
+                    // document.getElementById("myText").innerHTML = request.responseText;
+                    console.log(request.responseText);
+
+                    var col_dict =  JSON.parse(request.responseText);
+
+                    if (col_dict['verify'] == false){
+                        document.getElementById("myText").innerHTML = col_dict['Error Message'];
+                    }
+
+                    else {
+                        document.getElementById("myText").innerHTML = "Success";
+
+                        console.log(col_dict['col'][0])
+
+                        let dBody = document.getElementById('colList');
+                        dBody.innerHTML = "";
+
+                        var str = "";
+                        for (let i = 0; i < col_dict['col'].length; i++){
+
+                            var val = col_dict['col'][i]
+                            let btn = document.createElement("button");
+                            btn.value = val;
+                            btn.className = "col";
+                            btn.id = val;
+                            btn.innerHTML = val;
+                            dBody.appendChild(btn);
+                            
+                        }
+
+                    }
+                }
+            }
+        }
+
+        function assignModelType(event){
+            // alert(event.target.id);
+            if(event.target.className == 'modeltype'){
+                modelType = event.target.id;
+                event.target.style.backgroundColor = "rgb(216, 243, 243)";
+                if (event.target.id == 'Regression'){
+                    document.getElementById('Classification').style.backgroundColor = "white";
+                }
+                else{
+                    document.getElementById('Regression').style.backgroundColor = "white";
+                }
+            }
+        }
+
+        function displayAlgo(){
+            // var modelType;
+            var modelTypeChk = document.querySelectorAll(".modelType");
+            console.log(modelTypeChk);
+
+            // for(i = 0; i < modelTypeChk.length; i++){
+            //     if(modelTypeChk[i].checked == true){
+            //         modelType = modelTypeChk[i].value;
+            //     }
+            // }
+
+            var msg = document.getElementById("myText").innerHTML;
+
+            if (msg == "Success" && modelType){
+                console.log(modelType);
+
+                if (modelType == 'Regression'){
+                    document.getElementById('model_choice_r').style.display = "block";
+                    document.getElementById('model_choice_c').style.display = "None";
+                }
+                else {
+                    document.getElementById('model_choice_r').style.display = "None";
+                    document.getElementById('model_choice_c').style.display = "block";
+                }
+
+                firstPage.style.display = "None";
+                secondPage.style.display = "flex";
+                dot1.style.backgroundColor = "white";
+                dot2.style.backgroundColor = "rgb(19, 255, 19)";
+            }
+
+            else{
+                alert("Please fill all the field and ensure that appropriate file is uploaded");
+            }
+        }
+
+        var myDiv;
+
+        function choose_col(event){
+            if(event.target.matches('button')){
+
+                if (event.target.id == 'select1' || event.target.id == 'select2'){
+                    // Disable background cursor event
+                    let bckGround = document.getElementById('userAction');
+                    let popUpBox = document.getElementById('popOutWindow');
+                    bckGround.style.pointerEvents = "none";
+                    // Set background low opacity
+                    bckGround.style.opacity = "20%";
+                    // Display the box
+                    popUpBox.style.display = "flex";
+
+                    // Real function begins here
+
+                    if (event.target.id == 'select1'){
+                        myDiv = document.getElementById('chosen_col1');
+                    }
+                    else{
+                        myDiv = document.getElementById('chosen_col2');
+                    }
+                }
+            }
+        }
+
+        let userAction = document.getElementById('colList');
+        userAction.addEventListener("click", userChoice);
+
+        function userChoice(event){
+            if(event.target.matches('button')){
+                if (myDiv.id == 'chosen_col1'){
+                    if(dict['target']!= null && event.target.value != dict['target']){
+                        let b = document.getElementById(dict['target']);
+                        b.style.backgroundColor = "white";
+                    }
+                    dict['target'] = event.target.value;
+                    event.target.style.backgroundColor = "gray";
+                }
+                else{
+                    if (event.target.value == dict['target']){
+                        alert("Index and target column cannot be the same.");
+                    }
+                    else{
+                        if(dict['index']!= 0 && event.target.value != dict['index']){
+                            let a = document.getElementById(dict['index']);
+                            a.style.backgroundColor = "white";
+                        }
+                        dict['index'] = event.target.value;
+                        event.target.style.backgroundColor = "gray";
+                    }
+                }
+            }
+        }
+
+        function confirmCol(){
+            if (myDiv.id == 'chosen_col1'){
+                if (dict['target'] != null){
+                    myDiv.innerHTML = dict['target'];
+                    myDiv.style.visibility = 'visible';
+                }
+            }
+
+            else{
+                if(dict['index'] != 0){
+                    myDiv.innerHTML = dict['index'];
+                    myDiv.style.visibility = 'visible';
+                }
+            }
+            
+            closeBox();
+        }
+
+        function closeBox(){
+            let bckGround = document.getElementById('userAction');
+            let popUpBox = document.getElementById('popOutWindow');
+            bckGround.style.pointerEvents = "auto";
+            bckGround.style.opacity = "100%";
+            popUpBox.style.display = "none";
+        }
+
+        function cancel(){
+
+            if (myDiv.id == 'chosen_col1'){
+                if (myDiv.innerHTML == ""){
+                    if(dict['target'] != null){
+                        let a = document.getElementById(dict['target']);
+                        a.style.backgroundColor = 'white';
+                    }
+                    dict['target'] = null;
+                    // myDiv.style.visibility = 'visible';
+                }
+            }
+
+            else{
+                if(myDiv.innerHTML == ""){
+                    if(dict['index'] != 0){
+                        let b = document.getElementById(dict['index']);
+                        b.style.backgroundColor = 'white';
+                    }
+                    dict['index'] = 0;
+                    // myDiv.style.visibility = 'visible';
+                }
+            }
+
+            closeBox();
+        }
+
+        function reset1(){
+            let dv = document.getElementById('chosen_col1');
+            if(dict['target'] != null){
+                let a = document.getElementById(dict['target']);
+                a.style.backgroundColor = 'white';
+            }
+            dv.style.visibility = 'hidden';
+            dv.innerHTML = "";
+            dict['target'] = null;
+        }
+
+        function reset2(){
+            let dv = document.getElementById('chosen_col2');
+            if(dict['index'] != 0){
+                let b = document.getElementById(dict['index']);
+                b.style.backgroundColor = 'white';
+            }
+            dv.style.visibility = 'hidden';
+            dv.innerHTML = "";
+            dict['index'] = 0;
+        }
+
+        // let userAction = document.getElementById('col_btn');
+        // let userAction2 = document.getElementById('col_btn2');
+
+        // userAction.addEventListener("click", userChoice);
+        // userAction2.addEventListener("click", userChoice2);
+
+        // function userChoice(event){
+        //     if (event.target.matches("button")){
+        //         alert(event.target.value);
+        //         dict['target'] = event.target.value;
+        //     }
+        // }
+
+        // function userChoice2(event){
+        //     if (event.target.matches("button")){
+        //         alert(event.target.value);
+        //         dict['index'] = event.target.value;
+        //     }
+        // }
+
+        // Generate Random Value for progress Checking
+
+        var yourIndex = 0;
+
+        var request = new XMLHttpRequest();
+        request.open("POST","/createProgress");
+        request.send();
+
+        request.onreadystatechange = function() {
+            if (request.readyState==4 && request.status==200){
+                
+                yourIndex = parseInt(request.responseText);
+                console.log(yourIndex);
+            }
+        }
+        //}
+        var myDictionary = {
+            'taskFinish' : "False"
+        };
+
+        var intervalID;
+
+        function startCleaning(){
+            console.log(dict)
+
+            // Check model selection
+            var arr = []
+            var chk = document.querySelectorAll(".model");
+            chkLength = chk.length;
+
+            for(i = 0; i<chkLength; i++){
+                if(chk[i].checked == true){
+                    arr.push(chk[i].value);
+                }
+            }
+
+            console.log(arr);
+            console.log(modelType);
+
+            if(dict['target'] == null || arr.length == 0){
+                document.getElementById('warning').innerHTML = 'Please choose your algorithm and target column!'
+            }
+
+            else{
+                document.getElementById('warning').innerHTML = ''
+                let formData = new FormData();
+                formData.append("file", myfile.files[0]);
+                formData.append("index", yourIndex);
+                formData.append("dict", JSON.stringify(dict));
+                formData.append("modelChoice", JSON.stringify(arr));
+                formData.append("modelType", modelType);
+                formData.append("username", un);
+
+                var request = new XMLHttpRequest();
+                request.open("POST","/cleanData");
+                request.send(formData);              
+
+                request.onreadystatechange = function() {
+                    if (request.readyState==4 && request.status==200){
+
+                        // Checking
+                        response = request.responseText
+
+                        if(response == "False"){
+                            document.getElementById('warning').innerHTML = 'Target Column Chosen is not suitable for the chosen machine learning type. Please choose again'
+                        }
+                        else{
+                            secondPage.style.display = "None";
+                            thirdPage.style.display = "flex";
+
+                            dot2.style.backgroundColor = "white";
+                            dot3.style.backgroundColor = "rgb(19, 255, 19)";
+                            intervalID = setInterval(progressFunc, 10000);
+                        }
+                    }
+                }
+            }
+        }
+
+        function sleep(milliseconds) {
+            const date = Date.now();
+            let currentDate = null;
+            do {
+                currentDate = Date.now();
+            } while (currentDate - date < milliseconds);
+        }
+
+        function progressFunc(){
+
+            console.log(yourIndex);
+
+            let formData = new FormData();
+            formData.append("index", yourIndex);
+
+            var request2 = new XMLHttpRequest();
+            request2.open("POST","/returnProgress");
+            request2.send(formData);
+
+            request2.onreadystatechange = function() {
+
+                if (request2.readyState==4 && request2.status==200){
+                    // Your action here
+                    var currentStatus1 = '';
+                    var status_dict = JSON.parse(request2.responseText);
+                    console.log(status_dict);
+                    var status_list = status_dict['status'];
+                    console.log(status_list);
+
+                    let tbl = document.getElementById('currentProgress');
+                    // let tbl = document.getElementById('progressBlk');
+                    // tbl.innerHTML = "";
+
+                    tbl.innerHTML = "";
+
+                    var headerStr = '<tr>\
+                        <th style="background-color: rgb(236, 237, 237); border-bottom: 1px solid; text-align: left; padding: 10px 10px; display: flex; justify-content: space-between;">\
+                            <div>Process</div>\
+                            <i class="bx bx-refresh" onclick="progressFunc()" style="font-size: 25px; padding:5px;font-weight: bolder; background-color: azure;"></i>\
+                        </th>\
+                    </tr>';
+
+                    tbl.innerHTML = headerStr;
+                    
+                    for (var ind in status_list){
+                        
+                        // currentStatus1 = currentStatus1.concat("<br>",status_list[ind]);
+                        // console.log(currentStatus1);
+                        // console.log(status_list[ind]);
+
+                        let tr = document.createElement('tr');
+                        let td = document.createElement('td');
+                        td.className = 'rowData';
+                        td.innerHTML = status_list[ind];
+
+                        tr.appendChild(td);
+                        tbl.appendChild(tr);              
+                    }
+                    // document.getElementById("currentProgress").innerHTML = currentStatus1;
+                    if (status_dict['taskFinish'] == "True"){
+                        clearInterval(intervalID);
+                        let hiddenField = document.getElementById('myResult');
+                        hiddenField.value = request2.responseText;
+
+                        let myForm = document.getElementById('generalReport');
+                        let myBtn = document.createElement('button');
+                        myBtn.type = 'submit';
+                        myBtn.name = 'submit_btn';
+                        myBtn.id = 'submit_btn';
+                        myBtn.innerHTML = 'Proceed to report'
+                        myForm.appendChild(myBtn);
+
+                        let formData = new FormData();
+                        formData.append("index", yourIndex);
+
+                        var request3 = new XMLHttpRequest();
+                        request3.open("POST","/deleteProgressClass");
+                        request3.send(formData);
+                    }
+                }
+            }
+        }
+
+    </script>
+
+</body>
+</html>
