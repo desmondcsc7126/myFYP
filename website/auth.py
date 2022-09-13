@@ -42,6 +42,17 @@ db_conn = connections.Connection(
     db=customdb
 )
 
+cursor = db_conn.cursor()
+
+interactive_timeout = 'SET SESSION interactive_timeout = 600000'
+wait_timeout = 'SET SESSION wait_timeout = 600000'
+
+cursor.execute(interactive_timeout)
+cursor.execute(wait_timeout)
+
+db_conn.commit()
+cursor.close()
+
 s3 = boto3.resource(
     's3'
 )
